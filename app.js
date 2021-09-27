@@ -12,13 +12,13 @@ var apiUsersRouter = require('./routes/api/users');
 var config = require('./config.dev');
 var mongoose = require('mongoose');
 
+var app = express();
+
 //Connect to MongoDB
 mongoose.connect(config.mongodb, {useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true });
 
 //Test the file
 // console.log(config);
-
-var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

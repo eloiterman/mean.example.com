@@ -3,8 +3,6 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-
-var config = require('./config.dev');
 var mongoose = require('mongoose');
 var session = require('express-session');
 var MongoStore = require('connect-mongo')(session);
@@ -12,14 +10,19 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 
 var Users = require('./models/users');
-var apiUsersRouter = require('./routes/api/users');
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var apiAuthRouter = require('./routes/api/auth');
+var apiUsersRouter = require('./routes/api/users');
 
 var app = express();
 
+//Call the config file
+var config = require('./config.dev');
+
 //Connect to MongoDB
-mongoose.connect(config.mongodb, {useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true });
+mongoose.connect(config.mongodb, { useNewUrlParser: true });
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -31,7 +34,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-//~line 32 before routes
 app.use(require('express-session')({
   //Define the session store
   store: new MongoStore({
@@ -51,7 +53,6 @@ app.use(require('express-session')({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-//~line 53
 passport.use(Users.createStrategy());
 
 passport.serializeUser(function(user, done){
@@ -68,9 +69,10 @@ passport.deserializeUser(function(user, done){
   done(null, user);
 });
 
-app.use('/api/users', apiUsersRouter);
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/api/auth', apiAuthRouter);
+app.use('/api/users', apiUsersRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

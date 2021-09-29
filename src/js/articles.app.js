@@ -1,25 +1,25 @@
 var articlesApp = (function () {
 
     function viewArticles() {
-
+  
       let uri = `${window.location.origin}/api/articles`;
       let xhr = new XMLHttpRequest();
       xhr.open('GET', uri);
-
+  
       xhr.setRequestHeader(
         'Content-Type',
         'application/json; charset=UTF-8'
       );
-
+  
       xhr.send();
-
+  
       xhr.onload = function () {
         let app = document.getElementById('app');
         let data = JSON.parse(xhr.response);
         let articles = data.articles;
         let table = '';
         let rows = '';
-
+  
         //Loop each article record into it's own HTML table row, each article should
         //have a link a article view
         for (let i = 0; i < articles.length; i++) {
@@ -35,7 +35,7 @@ var articlesApp = (function () {
             </td>
           </tr>`;
         }
-
+  
         //Create an articles panel, add a table to the panel, inject the rows into the
         //table
         table = `<div class="card">
@@ -58,15 +58,15 @@ var articlesApp = (function () {
             </table>
           </div>
         </div>`;
-
+  
         //Append the HTML to the #app
         app.innerHTML = table;
       }
     }
-
+  
     function createArticle() {
       var app = document.getElementById('app');
-
+  
       var form = `
           <div class="card">
             <div class="card-header clearfix">
@@ -116,30 +116,67 @@ var articlesApp = (function () {
             </div>
           </div>
       `;
-
-
+  
+  
       app.innerHTML = form;
     }
-
+  
     function viewArticle(id){
-
+  
       let uri = `${window.location.origin}/api/articles/${id}`;
       let xhr = new XMLHttpRequest();
       xhr.open('GET', uri);
-
+  
       xhr.setRequestHeader(
         'Content-Type',
         'application/json; charset=UTF-8'
       );
-
+  
       xhr.send();
-
+  
       xhr.onload = function(){
-
+  
         let app = document.getElementById('app');
         let data = JSON.parse(xhr.response);
         let card = '';
-
+  
+        card = `<div class="card">
+          <div class="card-header clearfix">
+            <h2 class="h3 float-left">${data.article.title}</h2>
+          </div>
+          <div class="card-body">
+            <div class="blockquote">${data.article.body}</div>
+            <br>
+            <div>Tagged: <em>${data.article.keywords}</em></div>
+          </div>
+        </div>
+  
+        `;
+  
+        app.innerHTML = card;
+      }
+    }
+  
+    // View Article by slug outside of session
+    function viewArticle(slug){
+  
+      let uri = `${window.location.origin}/api/articles/${slug}`;
+      let xhr = new XMLHttpRequest();
+      xhr.open('GET', uri);
+  
+      xhr.setRequestHeader(
+        'Content-Type',
+        'application/json; charset=UTF-8'
+      );
+  
+      xhr.send();
+  
+      xhr.onload = function(){
+  
+        let app = document.getElementById('app');
+        let data = JSON.parse(xhr.response);
+        let card = '';
+  
         card = `<div class="card">
           <div class="card-header clearfix">
             <h2 class="h3 float-left">${data.article.title}</h2>
@@ -155,65 +192,29 @@ var articlesApp = (function () {
         </div>
   
         `;
-
+  
         app.innerHTML = card;
       }
     }
-
-    // View Article by slug outside of session
-    function viewArticle(slug){
-
-      let uri = `${window.location.origin}/api/articles/${slug}`;
-      let xhr = new XMLHttpRequest();
-      xhr.open('GET', uri);
-
-      xhr.setRequestHeader(
-        'Content-Type',
-        'application/json; charset=UTF-8'
-      );
-
-      xhr.send();
-
-      xhr.onload = function(){
-
-        let app = document.getElementById('app');
-        let data = JSON.parse(xhr.response);
-        let card = '';
-
-        card = `<div class="card">
-          <div class="card-header clearfix">
-            <h2 class="h3 float-left">${data.article.title}</h2>
-          </div>
-          <div class="card-body">
-            <div class="blockquote">${data.article.body}</div>
-            <br>
-            <div>Tagged: <em>${data.article.keywords}</em></div>
-          </div>
-        </div>
-        `;
-
-        app.innerHTML = card;
-      }
-    }
-
+  
     function editArticle(id) {
-
+  
       let uri = `${window.location.origin}/api/articles/${id}`;
       let xhr = new XMLHttpRequest();
       xhr.open('GET', uri);
-
+  
       xhr.setRequestHeader(
         'Content-Type',
         'application/json; charset=UTF-8'
       );
-
+  
       xhr.send();
-
+  
       xhr.onload = function () {
         let app = document.getElementById('app');
         let data = JSON.parse(xhr.response);
         var date = Date(data.article.published);
-        console.log(date);
+        // console.log(date);
         var form = `
           <div class="card">
             <div class="card-header clearfix">
@@ -273,32 +274,32 @@ var articlesApp = (function () {
           </div>
   
     `;
-
+  
         app.innerHTML = form;
         processRequest('editArticle', '/api/articles', 'PUT');
       }
     }
-
+  
     function processRequest(formId, url, method) {
       let form = document.getElementById(formId);
       form.addEventListener('submit', function (e) {
         e.preventDefault();
-
+  
         let formData = new FormData(form);
         let uri = `${window.location.origin}${url}`;
         let xhr = new XMLHttpRequest();
         xhr.open(method, uri);
-
+  
         xhr.setRequestHeader(
           'Content-Type',
           'application/json; charset=UTF-8'
         );
-
+  
         let object = {};
         formData.forEach(function (value, key) {
           object[key] = value;
         });
-
+  
         xhr.send(JSON.stringify(object));
         xhr.onload = function () {
           let data = JSON.parse(xhr.response);
@@ -310,32 +311,32 @@ var articlesApp = (function () {
         }
       });
     }
-
+  
         function deleteView(id){
-
+  
           let uri = `${window.location.origin}/api/articles/${id}`;
           let xhr = new XMLHttpRequest();
           xhr.open('GET', uri);
-
+  
           xhr.setRequestHeader(
             'Content-Type',
             'application/json; charset=UTF-8'
           );
-
+  
           xhr.send();
-
+  
           xhr.onload = function(){
             let app = document.getElementById('app');
             let data = JSON.parse(xhr.response);
             let card = '';
-
+  
             card = `<div class="card bg-transparent border-danger text-danger bg-danger">
               <div class="card-header bg-transparent border-danger">
-                <div class="float-right">
-                <a href="#" class="btn btn-primary">Cancel</a>
-                </div>
-              <h2 class="h3 text-center">You're deleting this article</h2>
-                </div>
+              <div class="float-right">
+              <a href="#" class="btn btn-primary">Cancel</a>
+              </div>
+                <h2 class="h3 text-center">You're deleting this article</h2>
+              </div>
               <div class="card-body text-center">
                 <div>
                   Are you sure you want to delete
@@ -353,24 +354,24 @@ var articlesApp = (function () {
   
               </div>
             </div>`;
-
+  
             app.innerHTML = card;
           }
         }
-
+  
         function deleteArticle(id){
-
+  
           let uri = `${window.location.origin}/api/articles/${id}`;
           let xhr = new XMLHttpRequest();
           xhr.open('DELETE', uri);
-
+  
           xhr.setRequestHeader(
             'Content-Type',
             'application/json; charset=UTF-8'
           );
-
+  
           xhr.send();
-
+  
           xhr.onload = function(){
             let data = JSON.parse(xhr.response);
             if(data.success === true){
@@ -378,48 +379,48 @@ var articlesApp = (function () {
             }else{
               alert('Unknown error, the article could not be deleted');
             }
-
+  
           }
-
+  
         }
-
+  
     return {
-      deleteArticle: function(id){
-        deleteArticle(id);
-      },
       load: function () {
         let hash = window.location.hash;
         let hashArray = hash.split('-');
-
+  
         switch (hashArray[0]) {
           case '#create':
             createArticle();
             processRequest('createArticle', '/api/articles', 'POST');
             break;
-
+  
           case '#view':
             viewArticle(hashArray[1]);
             break;
-
+  
           case '#edit':
             editArticle(hashArray[1]);
             break;
-
+  
           case '#delete':
             deleteView(hashArray[1]);
             break;
-
+  
           default:
             viewArticles();
             break;
         }
+      },
+      deleteArticle: function(id){
+        deleteArticle(id);
       }
     }
   })()
-
-
+  
+  
   articlesApp.load();
-
+  
   window.addEventListener("hashchange", function () {
     articlesApp.load();
   })
